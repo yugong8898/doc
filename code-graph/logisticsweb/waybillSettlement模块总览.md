@@ -1,0 +1,253 @@
+# 运单结算处理模块（waybillSettlement）总览
+
+## 概述
+
+运单结算处理模块负责对司机运单的结算信息进行管理，包括列表查询、调整结算、查看结算三大核心页面，以及一套支撑结算业务的子组件体系。模块支持风控预警、亏吨货损处理、抹零处理、分次支付（预付/回单付/到付）、批量提交等完整结算流程。
+
+---
+
+## 文件结构
+
+```
+src/views/userBase/waybillSettlement/
+├── index.vue               结算列表页（主入口）
+├── edit.vue                调整结算信息页
+├── read.vue                查看结算信息页
+├── tableHeader.js          列表表头配置（支持自定义显示列）
+└── components/
+    ├── CostMessageDetails.vue      费用明细展示/编辑组件
+    ├── PaymentMethodPanel.vue      付款方式组件（预付/到付/回单付）
+    ├── EditMessageDetails.vue      操作记录列表组件
+    ├── loseDialog.vue              亏吨货损确认弹窗
+    ├── examResult.vue              预审结果展示组件
+    ├── warnTable.vue               运单状态异常警告弹窗
+    ├── editLoadWeight.vue          修改装卸重量弹窗
+    └── rushIcon.vue                催付图标组件
+```
+
+---
+
+## 三大页面说明
+
+### index.vue — 结算列表页
+
+**职责**：运单结算处理的主列表页，支持多条件筛选、批量提交、风控预警查看、转移/终止结算。
+
+**核心功能**：
+- 搜索筛选：30+ 个筛选字段，按行展开/收起；支持来自工作台的参数回填
+- 批量提交：多选运单 → 校验全流程一致性 → 检查运单状态 → 风控测算 → 批量提交
+- 风控预警：中高风险运单弹窗确认，支持逐条处理；低风险直接提交
+- 列自定义：基于 `table-drag` 组件，支持列显示/隐藏、拖拽排序，配置存 `localForage`
+- 导出：按当前显示列导出，自动补充收款信息、服务费率等关联字段
+- 转移结算 / 终止结算：弹窗二次确认后调接口
+
+**关键方法**：
+
+| 方法 | 说明 |
+|------|------|
+| `getList()` | 查询列表，支持排序和工作台参数回填 |
+| `handleChangeOrderStatus()` | 批量提交入口，校验全流程冲突后进入风控流程 |
+| `checkOrder()` | 调 `checkOrderStatus` 检查运单状态，通过则进入风控 |
+| `riskManagement()` | 风控测算，分批处理低风险/中高风险运单 |
+| `handleSubmitRiskDialog()` | 风控弹窗确认回调，提交可通过的运单 |
+| `summaryFinalSettleResult()` | 汇总最终结算结果，展示成功/失败明细 |
+| `settleWaybillList()` | 实际调用 `postChangeStatus` 提交运单 |
+| `handleSelectable()` | 行可选判断：busStatus、settlementFlag、亏吨货损、风控结果、全流程一致性 |
+
+**批量提交流程**：
+```
+选中运单 → 校验全流程冲突 → checkOrder（运单状态检查）
+  → riskManagement（风控测算）
+    ├── 低风险 → settleWaybillList（直接提交）
+    └── 中高风险 → RiskWarningDialog（弹窗处理）
+          ├── 逐条处理/上传说明 → 通过则提交
+          └── 不可通过 → 记入失败
+  → summaryFinalSettleResult（汇总结果）
+```
+
+---
+
+### edit.vue — 调整结算信息页
+
+**职责**：对单条运单的结算信息进行编辑、保存、提交，集成风控、亏吨、抹零等完整流程。详细文档见 [waybillSettlement-edit.md](./waybillSettlement-edit.md)。
+
+**核心特点**：
+- 支持单价/结算数量 watch 联动重算运费（受 `once` 标志位控制）
+- 付款等式校验：小计 = 预付款 + 回单付 + 到付
+- 保存/提交均先保存数据再做风控测算
+- 亏吨 flag='1' 进页面自动弹确认弹窗
+
+---
+
+### read.vue — 查看结算信息页
+
+**职责**：结算信息的只读查看页，结构与 edit.vue 基本一致，所有字段均 disabled。
+
+**与 edit.vue 的差异**：
+
+| 维度 | edit.vue | read.vue |
+|------|----------|----------|
+| 单价 | 可编辑 | `parsePrice` 格式化后 disabled |
+| 结算数量 | 可编辑 | disabled |
+| 结算主体 | 下拉可选（disabled） | 直接展示文本 |
+| 付款方式 | PaymentMethodPanel mode=edit，回单付可编辑 | mode=read，全部只读 |
+| 装卸重量 | 通过 editLoadWeight 弹窗修改 | 不展示修改按钮 |
+| 底部按钮 | 保存 / 提交 | 仅返回 |
+| 亏吨弹窗 | flag='1' 自动弹出 | 不弹 |
+| 风控展示 | RiskWarning（页面内） + 弹窗 | 仅页面内 RiskWarning |
+| `getPartPay` | 用于联动计算 | 仅用于展示 receiptPayment/cashOnDelivery |
+
+---
+
+## 子组件说明
+
+### CostMessageDetails.vue
+费用明细展示与编辑组件，负责应收/应付费项的列表展示、增删改、合计计算。
+- 通过 `ref.commit()` 暴露校验方法供父页面调用
+- 详细文档见 [CostMessageDetails组件.md](./CostMessageDetails组件.md)
+
+### PaymentMethodPanel.vue（C147.9 新增）
+付款方式通用展示组件，展示预付款、到付、回单付三个字段。
+
+| Prop | 类型 | 说明 |
+|------|------|------|
+| `mode` | String | `edit`/`read`，控制回单付是否可编辑 |
+| `advancePayment` | String/Number | 预付款，始终只读 |
+| `cashOnDelivery` | String/Number | 到付，始终只读，计算逻辑由父页面维护 |
+| `receiptPayment` | String/Number | 回单付，edit 模式可编辑 |
+| `receiptPaymentError` | Boolean | 错误态标红 |
+| `errorMsg` | String | 错误提示文案 |
+
+事件：`update:receiptPayment`（.sync）、`receipt-payment-change`（触发父页面联动计算）
+
+### EditMessageDetails.vue
+操作记录列表，展示结算处理历史操作，支持分页（由父页面控制）。
+
+### loseDialog.vue
+亏吨货损确认弹窗，用于 `cargoCompensationConfirmFlag='1'` 时的人工确认流程。
+
+### examResult.vue
+预审结果展示组件，展示 `preExaminationReason` 字段，通过/不通过有不同样式。
+
+### warnTable.vue
+运单状态异常警告弹窗，批量提交前 `checkOrderStatus` 返回异常时触发展示。
+
+### editLoadWeight.vue
+修改装卸净重/毛重弹窗，调 `updateWeight` 接口，需传 `versionCode` 用于乐观锁。
+
+### rushIcon.vue
+催付图标组件，根据 `rushCount` 展示催付次数标记。
+
+---
+
+## 表头配置（tableHeader.js）
+
+`tableHeader.js` 导出列表页的完整列配置，共约 80 列，支持：
+- `checked`：默认是否显示
+- `custom`：是否支持用户自定义（隐藏/显示）
+- `fixed`：固定列（左/右）
+- `slot`：是否使用自定义 slot 渲染
+
+固定不可隐藏列：checkbox、序号、运单号、目的地省市区、操作。
+
+---
+
+## 数据流转总览
+
+```
+路由跳转（index → edit/read）
+  传参：waybillPoolId、waybillId、type、riskLevel
+
+edit/read 页面初始化
+  ├── getCompanyRoundMode()    金额取整方式
+  ├── loadStatusOption()       枚举字典
+  ├── getDetails()             运单详情 + 费用明细
+  └── getPartPay()             分次支付数据（预付/回单付/到付）
+
+用户操作（edit 模式）
+  ├── 修改单价/结算数量 → watch → 重算运费
+  ├── 修改回单付       → onReceiptPaymentChange → 重算到付
+  └── 修改费用明细     → CostMessageDetails 内部管理
+
+保存/提交
+  → 多重校验（费用/油气/付款等式/回单付比例）
+  → 抹零处理（diffAmount ≠ 0 时追加费项并弹窗确认）
+  → checkOrder → riskManagement → postData(status)
+  → 成功后跳回列表
+```
+
+---
+
+## 接口汇总
+
+| 接口函数 | 模块路径 | 说明 |
+|---------|---------|------|
+| `listWaybillPoolAndTmsWaybill` | `userBase.waybillSettlement` | 结算列表查询 |
+| `postChangeStatus` | `userBase.waybillSettlement` | 批量提交运单 |
+| `exportWaybillPoolAndTmsWaybillData` | `userBase.waybillSettlement` | 导出列表 |
+| `waybillStopSettlement` | `userBase.waybillSettlement` | 转移/终止结算 |
+| `postWaybillDetails` | `userBase.waybillSettlement` | 获取运单结算详情 |
+| `postSaveWaybill` | `userBase.waybillSettlement` | 保存/提交结算数据 |
+| `findZeroByBusId` | `userBase.waybillSettlement` | 获取抹零方式 |
+| `updateWeight` | `userBase.waybillSettlement` | 修改装卸重量 |
+| `dcsOperationRecordPagingexport` | `userBase.waybillSettlement` | 操作记录分页 |
+| `getPartPay` | `userBase.driverSupplymanagement` | 分次支付数据 |
+| `receiptPayCheck` | `userBase.driverSupplymanagement` | 回单付比例校验 |
+| `checkOrderStatus` | `userBase.logisticsPlan` | 运单状态校验 |
+| `queryWaybillRiskInfoList` | `@/components/Risk/riskTools` | 风控测算 |
+| `queryDispatchRatio` | `oilGasManage` | 油气配置查询 |
+| `getShipperName` | `userBase.supplymanagement` | 结算主体下拉 |
+| `getAttachmentsByWaybillId` | `userBase.transport` | 装卸/签收附件 |
+
+---
+
+## Mixin 依赖
+
+| Mixin | 提供能力 |
+|-------|---------|
+| `endOfCalculation` | 金额取整（`roundingMode`、`fomatFloatRoundMode`、`BNumber`、`getCompanyRoundMode`） |
+| `unitTool` | 结算单位换算（`exGetUnitName`、`exValidatorWeight`、`exGetgoodsQuantity` 等） |
+| `getTrackTimes` | 获取跟踪时间 |
+| `sourceDictionary` | 来源字典（`sourceOption`、`sourceObj`） |
+
+---
+
+## 权限控制字段（controlBtn）
+
+通过 `this.$route.meta` 初始化，常用字段：
+
+| 字段 | 说明 |
+|------|------|
+| `btnAdjustSettlement` | 显示"调整结算信息"按钮 |
+| `btnLookSettlementDetail` | 显示"查看结算信息"按钮 |
+| `btnTransferSettlement` | 显示批量"提交"按钮 |
+| `btnWaybillExport` | 显示"导出"按钮 |
+| `btnCease` | 显示"终止结算"按钮 |
+| `btnShift` | 显示"转移结算"按钮 |
+| `btnLookDetail` | 允许查看运单详情 |
+| `btnDownload` | 允许下载附件 |
+| `showStar` | 控制敏感字段脱敏展示 |
+
+---
+
+## 注意事项
+
+1. **全流程运单批量选择限制**：全流程（`fullProcessFlag=10`）和非全流程运单不能同时选中，全选时会提前拦截
+2. **新旧接口开关**：`getUseNew()` 通过平台参数 + 字典配置动态决定是否使用新版查询接口（`query_waybill_pool`）
+3. **结算状态控制入口**：`settlementFlag='0'` 正常结算才展示"调整/终止/转移"等操作按钮
+4. **工作台参数回填**：`getAndApplyWorkspaceParams()` 处理来自工作台的跳转，`isFromWorkspace` 标志控制装货时间是否必填校验
+5. **催付（rushCount）**：列表加载后异步补充 `rushCount`，通过 `rushCountRequest` 批量查询
+
+---
+
+## 相关文档
+
+- [调整结算信息页详细文档](./waybillSettlement-edit.md)
+- [CostMessageDetails 费用明细组件](./CostMessageDetails组件.md)
+- [useMainProps 工具模块](./useMainProps工具模块.md)
+
+---
+
+**文档版本**: v1.0
+**最后更新**: 2026年07月
+**整理人**: 王新骏
