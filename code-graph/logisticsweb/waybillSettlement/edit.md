@@ -288,8 +288,8 @@ getDetails()  →  detail（运单主信息）
 
 ## 相关文档
 
-- [查看结算信息页](./waybillSettlement-read.md)
-- [CostMessageDetails 组件](./CostMessageDetails组件.md)
+- [查看结算信息页](./read.md)
+- [CostMessageDetails 组件](./components/CostMessageDetails.md)
 - [useMainProps 工具模块](./useMainProps工具模块.md)
 
 ---

@@ -196,8 +196,8 @@ EditMessageDetails             → 展示操作记录
 
 ## 相关文档
 
-- [调整结算信息页](./waybillSettlement-edit.md)
-- [CostMessageDetails 组件](./CostMessageDetails组件.md)
+- [调整结算信息页](./edit.md)
+- [CostMessageDetails 组件](./components/CostMessageDetails.md)
 
 ---
 
