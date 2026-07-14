@@ -1,0 +1,281 @@
+# 运单结算处理 — 代码优化分析
+
+> 涉及文件：`index.vue` / `edit.vue` / `read.vue`
+> 技术栈：Vue2 + JS + Element UI（logisticsweb）
+> 目标：在不改变外部行为的前提下，提升可读性、可维护性，降低后续迭代成本
+
+---
+
+## 一、文件规模现状
+
+| 文件 | 行数 | 角色 |
+|------|------|------|
+| `index.vue` | 2780 | 列表页 |
+| `edit.vue` | 1685 | 调整结算信息页 |
+| `read.vue` | 944 | 查看结算信息页 |
+| `components/CostMessageDetails.vue` | 1256 | 费用明细组件 |
+| `components/SettlementInfo.vue` | 448 | 结算信息组件 |
+
+---
+
+## 二、`edit.vue` & `read.vue` — 共性问题
+
+### 问题 1：`getDetails` 一个方法承载了 7 件不同的事
+
+`edit.vue` 约 150 行，`read.vue` 约 120 行，一个方法同时做了：
+
+```
+① 接口请求（postWaybillDetails）
+② 构建 bmsWaybillPoolList 运单信息行（~25 行赋值）
+③ 处理费用明细列表（bmsBusinessCostList 的 map/格式化）
+④ 将 detail 字段逐一赋值到 formModel（~40 行一字一行赋值）
+⑤ 处理分账信息（splitFlag/splitName 等 7 个字段）
+⑥ 处理亏吨货损数据（cargoCompensationConfirmFlag 分支，edit 独有）
+⑦ 调用风控查询（queryWaybillRiskInfoList）
+```
+
+**影响**：任何一个环节出 bug 都要在 150 行里找；不同职责的代码相互穿插，修改一处容易牵连其他。
+
+**优化方向**：拆成 4 个单职责私有方法：
+
+```
+getDetails()
+  ├── _buildWaybillTableRow(detail)     → bmsWaybillPoolList
+  ├── _buildCostList(costList, type)    → responseRecordList
+  ├── _syncFormModel(detail)            → formModel 各字段赋值
+  └── _loadRiskInfo(detail)             → highMidWaybillListPage
+```
+
+---
+
+### 问题 2：结算重量赋值逻辑在两个文件里表面相同、实现不同
+
+`edit.vue`：
+
+```javascript
+const settlementWeight = this.exValidatorWeight(this.detail.settlementWeight || 0, 1000)
+this.formModel.settlementWeight = settlementWeight
+```
+
+`read.vue`：
+
+```javascript
+this.formModel.settlementWeight = this.BNumber(this.detail.settlementWeight || 0).dividedBy(1000).toFixed(3)
+```
+
+两种写法的精度处理和边界行为是否等价不明确，历史迭代中随时出现只改一处、另一处漂移的情况。
+
+**优化方向**：提取为统一工具方法 `_normalizeWeightToTon(rawValue)`，edit/read 共用同一实现，差异点在注释里显式标注。
+
+---
+
+### 问题 3：`bmsWaybillPoolList` 构建块 100% 重复（~25 行）
+
+两个文件里完全相同的约 25 个字段赋值，任何字段增减必须同时改两处。
+
+**优化方向**：提取为独立方法 `_buildWaybillTableRow(detail)`，放入两个文件共用的 mixin 或直接在父级抽取。
+
+---
+
+### 问题 4：`handleLookImg` 运输类型→附件状态码映射重复，且含大量魔法数字
+
+```javascript
+// edit.vue 和 read.vue 里完全相同的 ~30 行
+if (scope.row.transportTypeType === '3' || scope.row.transportTypeType === '6') {
+  if (btnType === '1') { wabillStatus = '410' }  // btnType '1' = 装货
+  else if (btnType === '2') { wabillStatus = '420' }  // '2' = 卸货
+  else if (btnType === '3') { wabillStatus = '500' }  // '3' = 签收
+}
+```
+
+`btnType` 和 `wabillStatus` 的含义完全靠记忆，没有任何说明。
+
+**优化方向**：提取为独立工具函数 `resolveAttachmentStatus(transportType, btnType)`，加上枚举常量注释：
+
+```javascript
+// btnType: '1'=装货 '2'=卸货 '3'=签收
+// wabillStatus: '410'=装货附件 '420'=卸货附件 '500'=签收附件
+const ATTACHMENT_STATUS_MAP = {
+  highway: { '1': '410', '2': '420', '3': '500' },
+  container: { '1': '410', '2': '430', '3': '430' },
+  other: { '1': '400', '2': '420', '3': '500' }
+}
+```
+
+---
+
+### 问题 5：`showRiskWarning` computed 和 `anchorNavList` computed 两个文件 100% 相同
+
+```javascript
+// edit.vue 和 read.vue 里完全相同
+showRiskWarning() { ... },
+anchorNavList() { ... }
+```
+
+**优化方向**：提取到 `waybillSettlement.mixin.js`，两个文件 mixin 引入。
+
+---
+
+### 问题 6：`loadStatusOption` 两个文件高度重复，且手动硬编码了状态枚举
+
+```javascript
+// edit.vue 和 read.vue 里几乎相同的 ~20 行
+this.dictionary.items[enumeration.djzt] = [
+  { name: '审核不通过', enumCode: '120', enable: 1 },
+  { name: '对账退回', enumCode: '210', enable: 1 },
+  // ...
+]
+```
+
+后端状态新增时，必须同时改两处。
+
+**优化方向**：将状态枚举提取到 `@/utils/enums.js` 或 `@/config/enumeration.js` 作为共享常量；`loadStatusOption` 方法提取到 mixin，差异部分（edit 多加载 `yxzdmlfs`）通过参数控制。
+
+---
+
+### 问题 7：`getShipperOffLine` 两个文件完全重复
+
+方法内容完全一样，没有任何差异。
+
+**优化方向**：迁入 `waybillSettlement.mixin.js`。
+
+---
+
+### 问题 8：`handleStar` 手机号打星方法重复，且存在于 index/edit/read 三个文件
+
+```javascript
+// 三个文件各一份，完全相同
+handleStar(content, showFlagSplit) {
+  if (typeof content !== 'string' || content.length < 7) return
+  return !showFlagSplit
+    ? content.slice(0, 3) + '*'.repeat(content.length - 7) + content.slice(-4)
+    : content
+}
+```
+
+**优化方向**：迁入 `unitTool.js` mixin 或 `@/utils/format.js`，统一命名为 `maskSensitive`。
+
+---
+
+### 问题 9：`edit.vue` 模板中无效的三元表达式
+
+```javascript
+// edit.vue 模板
+:class="[controlBtn.btnLookDetail ? 'blue pointer' : 'blue pointer']"
+```
+
+两个分支结果完全一样，是历史遗留的死代码。
+
+**优化方向**：直接改为 `class="blue pointer"`。
+
+---
+
+## 三、`edit.vue` 专项问题
+
+### 问题 10：提交链路 8 层嵌套调用，维护成本极高
+
+一次提交运单经历了：
+
+```
+handleSave / handleSubmit
+  → changeWaybillStatus()      费用校验 + 抹零处理 + 油气校验
+    → dialogConfirmZeroInfo()  抹零确认弹窗（可选）
+      → beforeChangeWaybill()  表单校验
+        → checkOrder()         预审状态检查
+          → riskManagement()   保存 + 风控计算
+            → getWaybillRiskInfoList()
+              → postSubmitAfterRiskPass()  实际保存/提交
+```
+
+**8 层调用深度**，中间夹了弹窗确认、多个 loading 状态、`btnTypeClicked` 标记，排查链路极长。
+
+**优化方向**：将链路拆成线性的步骤函数，用 `async/await` 串联，每步职责单一：
+
+```javascript
+async handleSave() {
+  const costList = await this._validateCostDetails()   // step1: 费用校验
+  if (!costList) return
+  const passed = await this._validateOilAndZero(costList) // step2: 油气+抹零
+  if (!passed) return
+  const formOk = await this._validateForm()            // step3: 表单校验
+  if (!formOk) return
+  await this._checkOrderAndRisk()                      // step4: 预审+风控
+}
+```
+
+---
+
+### 问题 11：`riskManagement` 中间夹杂大量废弃注释
+
+```javascript
+// 区分网络货运和传统货运
+// const netWaybillList = [] // 网络货运
+// const traditionalWaybillList = [] // 传统货运
+// for (let m = 0; m < this.selectItems.length; m++) {
+```
+
+注释掉的旧逻辑段散落多处，无废弃原因说明，增加阅读干扰。
+
+**优化方向**：统一标注 `// [废弃-待确认 vXX.X]` 或直接清理。
+
+---
+
+## 四、`index.vue` 专项问题
+
+### 问题 12：搜索区模板 ~200 行 `v-else-if` 平铺
+
+每个搜索字段都是一个独立的 `<template v-else-if="col.prop === 'xxx'">` 分支，共 ~20 个分支。新增或修改一个字段，需要同时改：`searchFormColumns` 数组定义 + 模板分支 + `searchForm` 初始值，三处易遗漏。
+
+**优化方向**：将字段的渲染配置（`type`、`placeholder`、`options`）收拢到 `searchFormColumns` 里，模板改为统一渲染器，字段增减只改配置。
+
+---
+
+### 问题 13：`data()` 中大量静态枚举对象内联，且与 `driverChecking/index.vue` 重复
+
+```javascript
+// 两个文件各自定义，内容相同
+wayStatus: { '1': '公路集卡(提重还空)', '2': '公路集卡(提空还重)', ... },
+settlementTypeObj: { '10': '元/吨', '20': '元/柜', '30': '元/车' },
+```
+
+**优化方向**：提取到 `@/utils/enums.js` 作为共享常量，`data()` 里只留动态数据。
+
+---
+
+## 五、优先级与推进节奏
+
+| 优先级 | 优化项 | 预估工作量 | 收益 |
+|--------|--------|-----------|------|
+| P0 | 提取 `_buildWaybillTableRow` / `resolveAttachmentStatus`（问题 3/4） | 半天 | 消灭跨文件重复，最低风险 |
+| P0 | 提取静态枚举常量到 enums（问题 6/13） | 半天 | 后续只改一处 |
+| P0 | 修复无效三元表达式（问题 9） | 5分钟 | 零风险清理 |
+| P1 | 提取 `waybillSettlement.mixin.js`（问题 5/7/8） | 半天 | 消灭 computed/method 跨文件重复 |
+| P1 | `getDetails` 拆分为 4 个单职责方法（问题 1） | 1天 | 最大可读性提升 |
+| P1 | 结算重量赋值统一（问题 2） | 2小时 | 消灭隐性差异风险 |
+| P2 | 提交链路线性化重构（问题 10） | 1.5天 | 降低 bug 引入风险 |
+| P2 | 废弃注释清理（问题 11） | 按需 | 需逐一人工确认 |
+| P3 | 搜索区模板配置化（问题 12） | 2天 | 收益最大，改动也最大 |
+
+---
+
+## 六、不会改动的部分
+
+- 所有接口调用的参数结构和 API 路径
+- `props` / `emit` / `provide` 对外接口
+- 业务规则（亏吨、抹零、风控的判断逻辑）
+- `CostMessageDetails` / `SettlementInfo` 等子组件的调用方式
+- 路由参数结构
+
+---
+
+## 七、回归验证重点
+
+| 场景 | 涉及改动 |
+|------|---------|
+| 调整结算信息 → 保存 | 问题 1/10 |
+| 调整结算信息 → 提交（含抹零弹窗） | 问题 10 |
+| 调整结算信息 → 提交（含风控拦截） | 问题 10 |
+| 查看结算信息页正常展示 | 问题 1/2/3 |
+| 装货/卸货/签收附件点击查看 | 问题 4 |
+| 手机号脱敏切换（明文/打星） | 问题 8 |
+| 列表页结算重量/应付金额展示 | 问题 13 |
