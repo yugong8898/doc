@@ -1,0 +1,88 @@
+<mxfile host="app.diagrams.net" modified="2026-07-24T00:00:00" agent="CodeBuddy" version="24.0.0" type="device">
+  <diagram id="ai-concepts" name="AI 概念区分">
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="820" pageHeight="1080" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;Skill / Prompt / Agent / Model / Loop / Graph / LLM / RAG / Harness 概念区分&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;fontSize=16;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="0" width="580" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="&lt;b&gt;Harness（运行治理）&lt;/b&gt;&lt;br&gt;约束框架：谁能触发、用何权限、证据存哪、如何暂停/恢复/回滚" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="40" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="&lt;b&gt;Graph（工作流图）&lt;/b&gt;&lt;br&gt;蓝图，编排 Agent/Skill，定义“谁依赖谁、哪里并行、哪里汇合”" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="150" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="&lt;b&gt;Agent（智能体）&lt;/b&gt;&lt;br&gt;人，读规则、用工具、调技能、自主完成多步任务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="260" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="&lt;b&gt;Loop（执行循环）&lt;/b&gt;&lt;br&gt;心跳，反复“思考→行动→观察”，定义“失败回哪、怎样继续、何时收敛”" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="370" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="&lt;b&gt;Model（模型）&lt;/b&gt;&lt;br&gt;抽象引擎层，定义“智能从哪来”" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="480" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="&lt;b&gt;LLM（大语言模型）&lt;/b&gt;&lt;br&gt;真实引擎，跑在背后的大模型（如 Qoder 背后的模型）" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="590" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" value="&lt;b&gt;RAG（检索增强）&lt;/b&gt;&lt;br&gt;外挂知识库，先检索资料喂给 LLM，减少胡说" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="700" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" value="&lt;b&gt;Skill（技能）&lt;/b&gt;&lt;br&gt;背包里的工具，打包好，/命令 调用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="810" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" value="&lt;b&gt;Prompt（提示词）&lt;/b&gt;&lt;br&gt;便签纸，临时指令，用完就扔" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="220" y="920" width="380" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="治理" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n2" target="n1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="130" as="sourcePoint" />
+            <mxPoint x="410" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" value="编排" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n3" target="n2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="240" as="sourcePoint" />
+            <mxPoint x="410" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" value="内部运行" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n4" target="n3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="350" as="sourcePoint" />
+            <mxPoint x="410" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="由…驱动" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n5" target="n4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="460" as="sourcePoint" />
+            <mxPoint x="410" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="具体实现" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n6" target="n5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="570" as="sourcePoint" />
+            <mxPoint x="410" y="550" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="由…增强" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n7" target="n6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="680" as="sourcePoint" />
+            <mxPoint x="410" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="配备" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n8" target="n7">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="790" as="sourcePoint" />
+            <mxPoint x="410" y="770" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="简化版" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;labelBackgroundColor=#ffffff;fontSize=11;" edge="1" parent="1" source="n9" target="n8">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="410" y="900" as="sourcePoint" />
+            <mxPoint x="410" y="880" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
