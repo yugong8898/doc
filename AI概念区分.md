@@ -58,7 +58,7 @@ Prompt (提示词)       → 便签纸，临时写的指令，用完就扔
 
 能**自主决策**的实体，可以读规则、用工具、调技能、多步推理完成复杂任务。
 
-- **主 Agent**：对话中的 AI 助手，能读 `.cursorrules`、能搜索代码、能编辑文件
+- **主 Agent**：对话中的 AI 助手，能读 `.cursor/rules/*.mdc`、能搜索代码、能编辑文件
 - **Sub Agent**：专用子智能体，比如 Qoder 内置的 `CodeReview`（代码审查）、`Debug`（调试）
 - **项目中的例子**：你说"帮我改这个需求"，Agent 会自动读规则 → 搜索代码 → 分析影响 → 写代码 → 自检，这一串是 Agent 自主完成的
 
@@ -120,7 +120,7 @@ Retrieval-Augmented Generation：给 LLM **外挂一个知识库**，先检索�
 
 ```
 Agent（AI 助手）
-├── 自动读取 → .cursorrules / .qoder/rules/（项目规则，每次生效）
+├── 自动读取 → .cursor/rules/*.mdc / .qoder/rules/（项目规则，每次生效）
 ├── 手动引用 → .md/prompts/role-xxx.md（Prompt，按需引用）
 ├── 斜杠命令 → .qoder/skills/xxx（Skill，按需触发）
 ├── 派子智能体 → CodeReview / Debug（Sub Agent，专用任务）
@@ -133,7 +133,7 @@ Agent（AI 助手）
 
 ## 最佳实践
 
-- **规则类**（每次都要遵守的）→ 放 `.cursorrules` / `.qoder/rules/`
+- **规则类**（每次都要遵守的）→ 放 `.cursor/rules/*.mdc` / `.qoder/rules/`
 - **流程类**（反复执行的标准步骤）→ 转成 Skill
 - **临时类**（偶尔用一次的）→ 直接 Prompt 就行，不用转 Skill
 - **复杂类**（需要多步自主完成的）→ 交给 Agent，必要时派 Sub Agent

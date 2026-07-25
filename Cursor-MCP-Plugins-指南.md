@@ -35,7 +35,7 @@
 - Git 操作自动化（查看状态、提交代码、分支管理）
 - 代码审查和 PR 管理
 - Issue 跟踪和协作
-- 生成符合规范的 commit 信息（配合 `.cursorrules` 规则）
+- 生成符合规范的 commit 信息（配合 `.cursor/rules/*.mdc` 规则）
 
 ---
 
@@ -144,7 +144,7 @@
 
 ### 1. GitKraken + Commit 规范
 
-根据 `.cursorrules` 中的规则，使用 GitKraken 自动生成符合规范的提交信息：
+根据 `.cursor/rules/*.mdc` 中的规则，使用 GitKraken 自动生成符合规范的提交信息：
 
 **提交类型**：
 ```
@@ -389,7 +389,7 @@ chore: 构建/工具相关
 
 - [GitLens 快速上手指南](./GitLens-快速上手指南.md)
 - [Cursor Superpowers 完整指南](./superpowers-complete-guide.md)
-- [项目 .cursorrules 规则](../.cursorrules)
+- [项目规则文件](../.cursor/rules/)
 
 ---
 

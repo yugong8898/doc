@@ -82,7 +82,7 @@ spec-kit 可理解为规格工具包，可能用于将需求、任务、验收�
 
 ### 2. 对 WLYD 的潜在价值
 
-WLYD 已有 `.md/prompts/` 角色体系、`.cursor/skills/` 工作流、`.cursorrules` 执行规范。spec-kit 类工具可能在以下方面有价值：
+WLYD 已有 `.md/prompts/` 角色体系、`.cursor/skills/` 工作流、`.cursor/rules/*.mdc` 执行规范。spec-kit 类工具可能在以下方面有价值：
 
 - 把需求拆解、方案、开发、审查、提测清单结构化。
 - 让 AI Agent 按固定规格生成任务和验收标准。
