@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 900" width="1280" height="900">
+  <style>
+    text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }
+  </style>
+  <defs>
+    <marker id="a-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="a-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/>
+    </marker>
+    <marker id="a-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+    </marker>
+    <marker id="a-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#9333ea"/>
+    </marker>
+  </defs>
+  <rect width="1280" height="900" fill="#ffffff"/>
+  <text x="40" y="46" font-size="20" font-weight="600" fill="#111827">WLYD Harness Loop Graph · 提效与质量闭环</text>
+  <text x="40" y="72" font-size="12" fill="#6b7280">Graph 决定改哪里 → Harness 机器验证结果 → Loop 负责回流与回退 · 对应 wlyd-workflow 阶段 0-6</text>
+  <rect x="40" y="110" width="300" height="330" rx="8" ry="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="56" y="138" font-size="13" font-weight="600" fill="#111827">Graph · 影响范围图谱（已具备）</text>
+  <rect x="64" y="156" width="252" height="58" rx="8" ry="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="78" y="179" font-size="12" font-weight="600" fill="#1e3a8a">.repoWiki/kb 逐文件索引</text>
+  <text x="78" y="196" font-size="10" fill="#6b7280">6000+ 文档 · L0-L5 分层</text>
+  <rect x="64" y="222" width="252" height="58" rx="8" ry="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="78" y="245" font-size="12" font-weight="600" fill="#1e3a8a">maps/ 目录树快照</text>
+  <text x="78" y="262" font-size="10" fill="#6b7280">7 个项目 · 按服务拆分</text>
+  <rect x="64" y="288" width="252" height="58" rx="8" ry="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="78" y="311" font-size="12" font-weight="600" fill="#1e3a8a">.sync-state.json 锚点</text>
+  <text x="78" y="328" font-size="10" fill="#6b7280">git 驱动增量发现变更</text>
+  <rect x="64" y="354" width="252" height="58" rx="8" ry="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+  <text x="78" y="377" font-size="12" font-weight="600" fill="#1e3a8a">gen_repo_wiki / gen_views</text>
+  <text x="78" y="394" font-size="10" fill="#6b7280">脚本重生成 + 回收漂移</text>
+  <rect x="470" y="130" width="340" height="64" rx="8" ry="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="640" y="157" font-size="14" font-weight="600" fill="#1e3a8a" text-anchor="middle">① Retrieve · 检索上下文</text>
+  <text x="640" y="179" font-size="11" fill="#6b7280" text-anchor="middle">查库优先：kb 索引 → maps → 源码</text>
+  <rect x="470" y="235" width="340" height="64" rx="8" ry="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="640" y="262" font-size="14" font-weight="600" fill="#1e3a8a" text-anchor="middle">② Plan · 接单确认 + 改动清单</text>
+  <text x="640" y="284" font-size="11" fill="#6b7280" text-anchor="middle">横向搜索 9 宫格 · R-* 编号 · 待确认项</text>
+  <rect x="470" y="340" width="340" height="64" rx="8" ry="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="640" y="367" font-size="14" font-weight="600" fill="#1e3a8a" text-anchor="middle">③ Act · 最小改动执行</text>
+  <text x="640" y="389" font-size="11" fill="#6b7280" text-anchor="middle">旧逻辑注释保留 · 逐文件 ESLint</text>
+  <rect x="470" y="445" width="340" height="64" rx="8" ry="8" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="640" y="472" font-size="14" font-weight="600" fill="#9a3412" text-anchor="middle">④ Verify · 机器门禁</text>
+  <text x="640" y="494" font-size="11" fill="#6b7280" text-anchor="middle">quick-verify / ESLint / tsc · exit≠0 不放行</text>
+  <rect x="470" y="550" width="340" height="64" rx="8" ry="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="640" y="577" font-size="14" font-weight="600" fill="#166534" text-anchor="middle">⑤ Learn · 回流沉淀</text>
+  <text x="640" y="599" font-size="11" fill="#6b7280" text-anchor="middle">坑点 / 规则 / CHANGELOG + 锚点回写</text>
+  <rect x="860" y="140" width="380" height="285" rx="8" ry="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="876" y="166" font-size="13" font-weight="600" fill="#111827">Harness · 验证驾驶舱</text>
+  <rect x="880" y="180" width="340" height="56" rx="8" ry="8" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="894" y="202" font-size="12" font-weight="600" fill="#111827">quick-verify.sh（已有）</text>
+  <text x="894" y="218" font-size="10" fill="#6b7280">git 状态 · console.log · 大文件</text>
+  <rect x="880" y="240" width="340" height="56" rx="8" ry="8" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="894" y="262" font-size="12" font-weight="600" fill="#111827">ESLint（唯一机器 gate）</text>
+  <text x="894" y="278" font-size="10" fill="#6b7280">改动后必跑，error 清零</text>
+  <rect x="880" y="300" width="340" height="56" rx="8" ry="8" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="894" y="322" font-size="12" font-weight="600" fill="#111827">tsc --noEmit（待接）</text>
+  <text x="894" y="338" font-size="10" fill="#6b7280">企服线 es-web / es-ops-platform</text>
+  <rect x="880" y="360" width="340" height="56" rx="8" ry="8" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="894" y="382" font-size="12" font-weight="600" fill="#111827">影响范围 + 规则脚本（待建）</text>
+  <text x="894" y="398" font-size="10" fill="#6b7280">多端矩阵 · /deep/ · BNumber 金额</text>
+  <rect x="880" y="445" width="340" height="64" rx="8" ry="8" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+  <text x="1050" y="472" font-size="14" font-weight="600" fill="#9a3412" text-anchor="middle">阶段出口 exit-code 门禁</text>
+  <text x="1050" y="494" font-size="11" fill="#6b7280" text-anchor="middle">现状：AI 自述 → 建议：脚本判定</text>
+  <rect x="40" y="660" width="780" height="160" rx="8" ry="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="56" y="688" font-size="13" font-weight="600" fill="#111827">Reflow · 回流沉淀（写回后闭环回 Graph）</text>
+  <rect x="62" y="706" width="178" height="94" rx="8" ry="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="76" y="730" font-size="12" font-weight="600" fill="#166534">known-pitfalls.md</text>
+  <text x="76" y="748" font-size="10" fill="#6b7280">13 类高频坑</text>
+  <text x="76" y="762" font-size="10" fill="#6b7280">编码前必检索</text>
+  <rect x="254" y="706" width="178" height="94" rx="8" ry="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="268" y="730" font-size="12" font-weight="600" fill="#166534">rules SSOT（三端镜像）</text>
+  <text x="268" y="748" font-size="10" fill="#6b7280">接单确认 · 完成自检</text>
+  <text x="268" y="762" font-size="10" fill="#6b7280">横向搜索 · 旧逻辑注释保留</text>
+  <rect x="446" y="706" width="178" height="94" rx="8" ry="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="460" y="730" font-size="12" font-weight="600" fill="#166534">.repoWiki 回流</text>
+  <text x="460" y="748" font-size="10" fill="#6b7280">CHANGELOG + 锚点回写</text>
+  <text x="460" y="762" font-size="10" fill="#6b7280">抽样验证 + 回收漂移</text>
+  <rect x="638" y="706" width="178" height="94" rx="8" ry="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="652" y="730" font-size="12" font-weight="600" fill="#166534">自动回流（待建）</text>
+  <text x="652" y="748" font-size="10" fill="#6b7280">commit 钩子抽取候选坑点</text>
+  <text x="652" y="762" font-size="10" fill="#6b7280">不再依赖人工喊话</text>
+  <rect x="860" y="530" width="380" height="140" rx="8" ry="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="876" y="558" font-size="13" font-weight="600" fill="#991b1b">当前痛点：三者未接通</text>
+  <text x="876" y="584" font-size="11" fill="#7f1d1d">① Graph 未接阶段1：改需求仍全仓读码</text>
+  <text x="876" y="608" font-size="11" fill="#7f1d1d">② Harness 非门禁：验证通过靠 AI 自述</text>
+  <text x="876" y="632" font-size="11" fill="#7f1d1d">③ Loop 静默死亡：C161 卡 2 个月无提醒</text>
+  <text x="876" y="656" font-size="11" fill="#7f1d1d">④ 回流靠人喊：教训不自动进 rules/坑点</text>
+  <text x="876" y="714" font-size="12" font-weight="600" fill="#111827">图例</text>
+  <line x1="886" y1="740" x2="926" y2="740" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <text x="936" y="744" font-size="12" fill="#6b7280">主流程 ① → ⑤</text>
+  <line x1="886" y1="766" x2="926" y2="766" stroke="#ea580c" stroke-width="1.5" marker-end="url(#a-orange)"/>
+  <text x="936" y="770" font-size="12" fill="#6b7280">控制 / 触发（调用 Harness 门禁）</text>
+  <line x1="886" y1="792" x2="926" y2="792" stroke="#16a34a" stroke-width="1.5" marker-end="url(#a-green)"/>
+  <text x="936" y="796" font-size="12" fill="#6b7280">知识读取（先查库再读码）</text>
+  <line x1="886" y1="818" x2="926" y2="818" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a-green)"/>
+  <text x="936" y="822" font-size="12" fill="#6b7280">知识写回（回流沉淀）</text>
+  <line x1="886" y1="844" x2="926" y2="844" stroke="#9333ea" stroke-width="1.5" marker-end="url(#a-purple)"/>
+  <text x="936" y="848" font-size="12" fill="#6b7280">反馈回退 / 下一轮循环</text>
+  <line x1="640" y1="194" x2="640" y2="231" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <line x1="640" y1="299" x2="640" y2="336" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <line x1="640" y1="404" x2="640" y2="441" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <line x1="640" y1="509" x2="640" y2="546" stroke="#2563eb" stroke-width="1.5" marker-end="url(#a-blue)"/>
+  <path d="M470,582 C406,582 406,150 470,150" stroke="#9333ea" stroke-width="1.5" fill="none" marker-end="url(#a-purple)"/>
+  <path d="M470,470 C348,460 348,384 470,372" stroke="#9333ea" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#a-purple)"/>
+  <path d="M340,190 L395,190 L395,182 L470,182" stroke="#16a34a" stroke-width="1.5" fill="none" marker-end="url(#a-green)"/>
+  <path d="M810,477 L876,477" stroke="#ea580c" stroke-width="1.5" fill="none" marker-end="url(#a-orange)"/>
+  <path d="M640,614 L640,656" stroke="#16a34a" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#a-green)"/>
+  <path d="M320,660 L320,444" stroke="#16a34a" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#a-green)"/>
+  <text x="452" y="330" font-size="11" fill="#7e22ce" text-anchor="middle" transform="rotate(-90 452 330)">下一轮循环 · 阶段 N → N+1</text>
+  <text x="374" y="424" font-size="10" fill="#7e22ce" text-anchor="middle" transform="rotate(-90 374 424)">验证失败 → 修复 / 回退 ②</text>
+  <text x="432" y="172" font-size="10" fill="#15803d" text-anchor="middle">查库检索</text>
+  <text x="841" y="469" font-size="10" fill="#9a3412" text-anchor="middle">调用验证</text>
+  <text x="652" y="640" font-size="10" fill="#15803d">回流写回</text>
+  <text x="330" y="548" font-size="10" fill="#15803d">更新索引 / 写回锚点</text>
+</svg>
