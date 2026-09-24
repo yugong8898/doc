@@ -114,13 +114,13 @@ WLYD 已有全前端语义索引 `.repoWiki/`，**默认先查库，查不到才
 
 ---
 
-## 六、提交前：机器门禁
+## 六、阶段出口：机器门禁
 
-> `.md/scripts/quick-verify.sh` 只扫描 `git diff --cached`，**必须先 stage 再跑**，否则会「全绿但什么都没检查」的假通过。
+> `.md/scripts/quick-verify.sh` 默认检查 staged + unstaged，**不要求 stage**。没有受检文件、文件不在 diff、范围漂移或 Git 读取失败都会非零退出，不允许“全绿但什么都没检查”。
 
 ```bash
-git add -A && git diff --cached --stat   # 先核对改动范围是否超出技术方案
-bash .md/scripts/quick-verify.sh         # git状态 / console.log / 大文件 / ESLint / 改动统计
+bash .md/scripts/quick-verify.sh --scope unstaged --allow-files path/a.vue,path/b.ts
+bash .md/scripts/quick-verify.sh --scope both --files path/a.vue,path/b.ts
 echo "exit=$?"                            # 0=通过；非 0=不放行
 ```
 
@@ -190,7 +190,8 @@ echo "exit=$?"                            # 0=通过；非 0=不放行
 □ 条件编译已按平台区分
 □ 平台规则未跨线套用（物流线 / 企服线）
 □ ESLint 已过（exit=0）
-□ git add -A && bash .md/scripts/quick-verify.sh 已过
+□ quick-verify 已按实际 diff 范围通过，受检文件与技术方案一致
+□ 阶段 4 后代码未变化；或变化后已重新审查并更新 SHA-256
 □ 完成自检已输出（横向搜索 / 旧逻辑保留 / 不确定项 / 门禁）
 ```
 
@@ -215,7 +216,7 @@ echo "exit=$?"                            # 0=通过；非 0=不放行
 | 已知坑点 | `known-pitfalls.md` | `.cursor/context/`、`.codebuddy/context/` |
 | 图谱 / 知识库 | `.repoWiki/`（kb 索引 + maps 目录树 + 锚点） | `.repoWiki/` |
 | 门禁脚本 | `quick-verify.sh` | `.md/scripts/quick-verify.sh` |
-| 流程状态 | `workflow-state.md` | `.md/temp/workflow-state.md` |
+| 流程状态 | `workflow-state.md` | 当前需求 PRD 目录 |
 
 ---
 
@@ -230,6 +231,6 @@ echo "exit=$?"                            # 0=通过；非 0=不放行
 
 ---
 
-**文档版本**：v1.0
+**文档版本**：v1.1
 **最后更新**：2026年09月
 **整理人**：王新骏

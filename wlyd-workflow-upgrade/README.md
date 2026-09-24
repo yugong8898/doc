@@ -57,6 +57,9 @@ Bug 根因分类回退
 | 追踪表 | 分层策略——所有需求建轻量记录，复杂需求建完整矩阵 |
 | 交付报告 | 独立成文件，workflow-state.md 只保留状态索引 |
 | AI 推导用例 | 标注"自测依据"，QA 正式用例到位后自动降级 |
+| 工作区 | 需求 PRD 目录唯一隔离；`.md/temp/` 仅放一次性草稿 |
+| 机器门禁 | 默认检查 staged + unstaged，不要求 `git add`，支持文件白名单 |
+| 审查有效性 | 阶段 4 保存代码 diff SHA-256；代码变化后必须复审 |
 
 ### 实施建议
 
@@ -69,8 +72,8 @@ Bug 根因分类回退
 5. 增加阶段 6（测试执行与 Bug 修复循环）
 6. 增加三种测试结论类型
 7. 增加验证证据、范围外改动、回归范围记录
-8. 同步更新三端 wlyd-workflow + role-workflow.md
-9. 执行三端同步校验
+8. 同步更新四端 wlyd-workflow + role-workflow.md
+9. 执行四端同步校验
 10. 用真实需求试运行，根据实际负担调整
 
 ## 当前状态
@@ -78,7 +81,7 @@ Bug 根因分类回退
 - **方案来源**：基于 qoder.workflow.md 和 cursor.workflow.md 两份模型结论
 - **汇总结论**：`.temp/workflow-result.md`
 - **实施文档**：本目录（`docs/wlyd-workflow-upgrade/`）
-- **待改造文件**：
+- **已加固文件**：
   - `.cursor/skills/wlyd-workflow/SKILL.md`
   - `.qoder/skills/wlyd-workflow/SKILL.md`
   - `.codebuddy/skills/wlyd-workflow/SKILL.md`
@@ -93,6 +96,6 @@ Bug 根因分类回退
 
 ---
 
-**文档版本**：v1.1  
+**文档版本**：v1.2  
 **最后更新**：2026年09月  
 **整理人**：王新骏
